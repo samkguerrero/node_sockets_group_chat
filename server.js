@@ -8,42 +8,38 @@ var app = express();
 app.use(express.static(path.join(__dirname, "./static")));
 const server = app.listen(1337);
 const io = require('socket.io')(server)
-var players = {};
 
 io.on('connection', function (socket) { //2
 
-    var player = {
-        x: 1,
-        y: 1,
-        id: socket.id
-    }
-
-    players[socket.id] = player;
-    console.log("created player with id - ",socket.id )
-    // console.log("all players - ", players)
-
-    socket.emit('new_user',player);
-
-    socket.broadcast.emit('all_players', players)
-    socket.emit('all_players', players)
-
-    socket.on('disconnect', function(){
-        console.log("deleted user", players[socket.id])
-        delete_package = {
-            players: players,
-            deleted_user: players[socket.id]
-        }
-        io.emit('disconnect', delete_package)
-        delete players[socket.id] 
+    socket.on('submsgform', function(data) {
+        console.log("incoming", data)
+        io.emit('board_new_msg', data)
     })
 
-    socket.on('moved_player', function(data){
-        players = data
-        console.log(players)
-        io.emit('updated_positions', players)
-    })
+    // players[socket.id] = player;
+    // console.log("created player with id - ",socket.id )
+    // // console.log("all players - ", players)
 
-    
+    // socket.emit('new_user',player);
+
+    // socket.broadcast.emit('all_players', players)
+    // socket.emit('all_players', players)
+
+    // socket.on('disconnect', function(){
+    //     console.log("deleted user", players[socket.id])
+    //     delete_package = {
+    //         players: players,
+    //         deleted_user: players[socket.id]
+    //     }
+    //     io.emit('disconnect', delete_package)
+    //     delete players[socket.id] 
+    // })
+
+    // socket.on('moved_player', function(data){
+    //     players = data
+    //     console.log(players)
+    //     io.emit('updated_positions', players)
+    // })
 
 });
 
